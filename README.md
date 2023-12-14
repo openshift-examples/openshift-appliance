@@ -29,7 +29,7 @@ Check out the git repo on a place with at least 200GB free storage!
 Configure libvirt network (air-gapped)
 
 *Create openshift-appliance network:*
-```
+```bash
 virsh net-define virsh-network.xml
 virsh net-autostart openshift-appliance
 virsh net-start openshift-appliance
@@ -37,7 +37,7 @@ virsh net-start openshift-appliance
 
 *Get bridge interface name:*
 
-```
+```bash
 $ virsh net-info openshift-appliance
 Name:           openshift-appliance
 UUID:           a83d55fa-d72a-4ad0-a38f-ebb846d863ab
@@ -53,7 +53,7 @@ In my case: `virbr2`
 
 *Configure firewalld:*
 
-```
+```bash
 export BRIDGE_IF=virbr2 # From command above
 
 firewall-cmd --zone=libvirt --add-interface=${BRIDGE_IF} --permanent
@@ -192,11 +192,11 @@ Assisted installer API: https://access.redhat.com/documentation/en-us/assisted_i
 
 On the openshift-appliance node:
 
-```
+```bash
 curl http://localhost:8090/api/assisted-install/v2/clusters | jq '.[0].validations_info | fromjson'
 ```
 
-```
+```bash
 # curl -s http://localhost:8090/api/assisted-install/v2/clusters | jq '.[0].validations_info | fromjson | .["hosts-data"]'
 [
   {
@@ -213,7 +213,7 @@ curl http://localhost:8090/api/assisted-install/v2/clusters | jq '.[0].validatio
 
 ```
 
-```
+```bash
 # curl -s http://localhost:8090/api/assisted-install/v2/clusters/a04681f0-c051-4143-85c0-a0bc4d71ea5c/hosts | jq '.[0].validations_info | fromjson | .network[] | select(.status == "failure")'
 {
   "id": "ntp-synced",
