@@ -1,0 +1,19 @@
+<network>
+  <name>openshift-appliance</name>
+  <forward mode='open'/>
+  <domain name='coe.muc.redhat.com'/>
+  <dns>
+    <host ip='192.168.13.12'>
+      <hostname>api.openshift-appliance.coe.muc.redhat.com</hostname>
+      <hostname>api-int.openshift-appliance.coe.muc.redhat.com</hostname>
+      <hostname>oauth-openshift.apps.openshift-appliance.coe.muc.redhat.com</hostname>
+      <hostname>console-openshift-console.apps.openshift-appliance.coe.muc.redhat.com</hostname>
+    </host>
+  </dns>
+  <ip address='192.168.13.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.13.10' end='192.168.13.250'/>
+      <host mac='52:54:00:a8:37:02' name='openshift-appliance.coe.muc.redhat.com' ip='192.168.13.12'/>
+    </dhcp>
+  </ip>
+</network>

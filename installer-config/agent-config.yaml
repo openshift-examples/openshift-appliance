@@ -1,0 +1,37 @@
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: openshift-appliance
+rendezvousIP: 192.168.13.12
+# hosts:
+#   - hostname: openshift-appliance
+#     interfaces:
+#       - name: enp1s0
+#         macAddress: 52:54:00:a8:37:02
+#     networkConfig:
+#       interfaces:
+#         - name: enp1s0
+#           type: ethernet
+#           state: up
+#           mac-address: 52:54:00:a8:37:02
+#           ipv4:
+#             enabled: true
+#             address:
+#               - ip: 192.168.13.12
+#                 prefix-length: 24
+#             dhcp: false
+#       dns-resolver:
+#         config:
+#           server:
+#             - 192.168.13.1
+#       routes:
+#         config:
+#           - destination: 0.0.0.0/0
+#             next-hop-address: 192.168.13.1
+#             next-hop-interface: enp1s0
+#             table-id: 254
+
+
+
+
+

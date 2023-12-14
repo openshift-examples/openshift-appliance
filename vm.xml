@@ -1,0 +1,70 @@
+<domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
+  <name>openshift-appliance</name>
+  <metadata>
+    <kvirt:info xmlns:kvirt="kvirt">
+      <kvirt:profile>kvirt</kvirt:profile>
+      <kvirt:plan>openshift-appliance</kvirt:plan>
+    </kvirt:info>
+  </metadata>
+  <memory unit='GiB'>64</memory>
+  <currentMemory unit='GiB'>64</currentMemory>
+  <vcpu>16</vcpu>
+  <cpu mode='host-passthrough'></cpu>
+  <os firmware="efi">
+    <type arch="x86_64" machine="q35" >hvm</type>
+    <boot dev="hd"/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <pae/>
+  </features>
+  <clock offset="utc">
+    <timer name="rtc" tickpolicy="catchup"/>
+    <timer name="pit" tickpolicy="delay"/>
+    <timer name="hpet" present="no"/>
+  </clock>
+  <pm>
+    <suspend-to-mem enabled="no"/>
+    <suspend-to-disk enabled="no"/>
+  </pm>
+  <devices>
+    <emulator>/usr/libexec/qemu-kvm</emulator>
+    <controller type="pci" index="0" model="pcie-root"/>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw' />
+      <source file='/var/lib/libvirt/images/openshift-appliance.raw'/>
+      <target dev='sda' bus='sata'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <source file='/var/lib/libvirt/images/agentconfig.noarch.iso'/>
+      <target dev='sdc' bus='sata'/>
+      <readonly/>
+      <address type='drive' controller='0' bus='0' target='0' unit='2'/>
+    </disk>
+    <controller type="usb" index="0" model="ich9-ehci1"/>
+    <controller type="usb" index="0" model="ich9-uhci1">
+      <master startport="0"/>
+    </controller>
+    <controller type="usb" index="0" model="ich9-uhci2">
+      <master startport="2"/>
+    </controller>
+    <controller type="usb" index="0" model="ich9-uhci3">
+      <master startport="4"/>
+    </controller>
+    <interface type='network'>
+      <mac address='52:54:00:a8:37:02'/>
+      <source network='openshift-appliance'/>
+      <model type='virtio'/>
+    </interface>
+    <video>
+      <model type='virtio' heads='1' primary='yes'/>
+      <alias name='video0'/>
+    </video>
+    <rng model="virtio">
+      <backend model="random">/dev/urandom</backend>
+    </rng>
+  </devices>
+</domain>
