@@ -15,3 +15,5 @@ networking:
 platform:
   none: {}
 pullSecret: '{"auths":{"":{"auth":"dXNlcjpwYXNz"}}}'
+sshKey: |
+  ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEQM82o2imwpHyGVO7DxCNbdE0ZWnkp6oxdawb7/MOCT coe-muc

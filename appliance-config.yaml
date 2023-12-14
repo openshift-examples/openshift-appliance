@@ -22,13 +22,14 @@ ocpRelease:
 # If not specified, the disk image should be resized when
 # cloning to a device (e.g. using virt-resize tool).
 # [Optional]
-diskSizeGB: 150
+diskSizeGB: 200
 # PullSecret required for mirroring the OCP release payload
 pullSecret: |
-  {"auths":{"cloud....
+  {"auths":{"cloud.openshift.com"...
 # Public SSH key for accessing the appliance during the bootstrap phase
 # [Optional]
-sshKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEQM82o2imwpHyGVO7DxCNbdE0ZWnkp6oxdawb7/MOCT coe-muc
+sshKey: |
+  ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEQM82o2imwpHyGVO7DxCNbdE0ZWnkp6oxdawb7/MOCT coe-muc
 # Password of user 'core' for connecting from console
 # [Optional]
 userCorePass: redhat
@@ -56,14 +57,21 @@ enableDefaultSources: false
 stopLocalRegistry: false
 # Additional images to be included in the appliance disk image.
 # [Optional]
-# additionalImages:
-#   - name: image-url
+additionalImages:
+  - name: registry.redhat.io/rhel8/support-tools
+  - name: quay.io/fedora/httpd-24
+
 # Operators to be included in the appliance disk image.
 # See examples in https://github.com/openshift/oc-mirror/blob/main/docs/imageset-config-ref.yaml.
 # [Optional]
-# operators:
-# - catalog: catalog-uri
-#   packages:
-#     - name: package-name
-#       channels:
-#         - name: channel-name
+operators:
+  - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.14
+    - name: openshift-pipelines-operator-rh
+      channels:
+      - name: latest
+    - name: openshift-gitops-operator
+      channels:
+      - name: latest
+    - name: local-storage-operator
+      channels:
+      - name: stable

@@ -1,12 +1,38 @@
 # OpenShift Appliance demo env.
 
-## Configure libvirt network (air-gapped)
+All about OpenShift Appliance you can find [here](https://github.com/openshift/appliance/tree/master).
 
+Important is the [user guide](https://github.com/openshift/appliance/blob/master/docs/user-guide.md)!
+
+## High-Level Flow Overview
+
+![Overview](https://github.com/openshift/appliance/raw/master/docs/images%2Fhl-overview.png)
+
+
+## Let's start with the Lab!
+
+*Requirements:*
+
+* Red Hat Enterprise Linux 9 - might work with different version / operating system as well - but not tested!
+* Libvirt running
+* Enough CPU, RAM and Storage to host a single node openshift
+
+Note: it works perfect on your [hetzner-ocp4](https://github.com/RedHat-EMEA-SSA-Team/hetzner-ocp4) box ;-)
+
+
+Check out the git repo on a place with at least 200GB free storage!
+
+```git clone ...```
+
+### First, networking!
+
+Configure libvirt network (air-gapped)
 
 *Create openshift-appliance network:*
 ```
 virsh net-define virsh-network.xml
 virsh net-autostart openshift-appliance
+virsh net-start openshift-appliance
 ```
 
 *Get bridge interface name:*
@@ -22,7 +48,7 @@ Bridge:         virbr2
 
 ```
 
-=> `virbr2`
+In my case: `virbr2`
 
 
 *Configure firewalld:*
@@ -39,38 +65,62 @@ firewall-cmd --zone=libvirt --add-service=ssh --permanent
 firewall-cmd --reload
 ```
 
-## Create OS disc
+## Let's start to prepare root disc of our appliance
 
-Follow <https://github.com/openshift/appliance/blob/master/docs/user-guide.md#disk-image-build---lab>
+If you want to know all details, checkout the [user guide](https://github.com/openshift/appliance/blob/master/docs/user-guide.md#disk-image-build---lab)
 
+Run all as root:
+```bash
+export APPLIANCE_IMAGE="quay.io/edge-infrastructure/openshift-appliance"
+export APPLIANCE_ASSETS=$(pwd)
+podman pull $APPLIANCE_IMAGE
 ```
+
+Use and adjust existing [appliance-config.yaml](appliance-config.yaml) or create a new one:
+```bash
+podman run --rm -it --pull newer -v $APPLIANCE_ASSETS:/assets:Z $APPLIANCE_IMAGE generate-config
+```
+
+Build the os image (for more details add `--log-level debug` :
+```bash
+podman run --rm -it --pull newer --privileged --net=host -v $APPLIANCE_ASSETS:/assets:Z $APPLIANCE_IMAGE build
+
+# Copy it to the vm place
 cp -v appliance.raw /var/lib/libvirt/images/openshift-appliance.raw
 ```
 
-## Create openshift config
 
-<https://github.com/openshift/appliance/blob/master/docs/user-guide.md#openshift-cluster-installation-user-site>
+## Let's create the OpenShift configuration.
 
+If you want to know all details, checkout the [user guide](https://github.com/openshift/appliance/blob/master/docs/user-guide.md#openshift-cluster-installation-user-site)
 
-```
+Create new [install-config.yaml](install-config.yaml) and [agent-config.yaml](agent-config.yaml) or use existing ones:
+
+```bash
 rm -rf cluster_config/
 mkdir cluster_config/
 cp -v cp installer-config/* cluster_config/
+```
+
+Build OpenShift config ISO
+
+```bash
 ./openshift-install agent create config-image --dir cluster_config/
+# Copy it to the VM
 cp -v cluster_config/agentconfig.noarch.iso /var/lib/libvirt/images/agentconfig.noarch.iso
 ```
 
-## Start/Create vm & watch console
+## Let's start the appliance
 
-```
-virsh define vm.xml
-virsh start vm.xml
+```bash
+virsh define virsh-vm.xml
+virsh start openshift-appliance
 virsh console openshift-appliance
 ```
 
 Follow the installation via:
 
-```
+```bash
 ./openshift-install agent wait-for bootstrap-complete --dir cluster_config/
 INFO Cluster is not ready for install. Check validations
 WARNING Cluster validation: The cluster has hosts that are not ready to install.
@@ -85,7 +135,7 @@ INFO Host openshift-appliance: updated status from known to preparing-for-instal
 ```
 
 
-## Configure load balancer/proxy for external access
+## Optional: Configure load balancer/proxy for external access
 
 ```
 cat - >/etc/systemd/system/openshift-4-loadbalancer.service <<EOF
@@ -130,6 +180,10 @@ Start the lb:
 ```
 systemctl enable --now openshift-4-loadbalancer
 ```
+
+# DONE 🎉 - Enjou your demo env
+
+
 
 ## Troubleshooting
 
