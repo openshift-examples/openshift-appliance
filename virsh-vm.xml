@@ -75,5 +75,4 @@
       <model name="isa-serial"/>
     </target>
   </serial>
-
 </domain>

@@ -66,12 +66,13 @@ additionalImages:
 # [Optional]
 operators:
   - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.14
-    - name: openshift-pipelines-operator-rh
-      channels:
-      - name: latest
-    - name: openshift-gitops-operator
-      channels:
-      - name: latest
-    - name: local-storage-operator
-      channels:
-      - name: stable
+    packages:
+      - name: openshift-pipelines-operator-rh
+        channels:
+        - name: latest
+      - name: openshift-gitops-operator
+        channels:
+        - name: latest
+      - name: local-storage-operator
+        channels:
+        - name: stable
